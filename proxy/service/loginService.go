@@ -3,8 +3,8 @@ package service
 import (
 	"encoding/json"
 	"errors"
-	"mode/proxy/middleware"
 	"net/http"
+	"proxy/middleware"
 )
 
 type Credentials struct {

@@ -3,10 +3,10 @@ package main
 import (
 	"context"
 	"log"
-	"mode/proxy/router"
 	"net/http"
 	"os"
 	"os/signal"
+	"proxy/router"
 	"time"
 )
 

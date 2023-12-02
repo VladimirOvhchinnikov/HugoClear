@@ -1,8 +1,8 @@
 package router
 
 import (
-	"mode/proxy/controller"
-	"mode/proxy/middleware"
+	"proxy/controller"
+	"proxy/middleware"
 
 	"github.com/go-chi/chi"
 )

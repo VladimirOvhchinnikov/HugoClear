@@ -3,14 +3,26 @@ package controller
 import (
 	"encoding/json"
 	"log"
-	"mode/proxy/service"
-	"mode/proxy/utils"
 	"net/http"
+	"proxy/service"
+	"proxy/utils"
 )
 
-// Контроллер слой
+// HandleLogin handles user login requests.
+// @Summary User Login
+// @Description This endpoint authenticates a user and returns a JWT token.
+// @Tags Authentication
+// @Accept  json
+// @Produce  json
+// @Param credentials body service.Credentials true "User Credentials"
+// @Success 200 {object} string "JWT Token"
+// @Failure 400 {string} string "Bad Request"
+// @Failure 401 {string} string "Unauthorized"
+// @Failure 415 {string} string "Unsupported Media Type"
+// @Failure 500 {string} string "Internal Server Error"
+// @Router /login [post]
 func HandleLogin(w http.ResponseWriter, r *http.Request) {
-	// Извлечение и анмаршалинг данных
+	// Extracting and unmarshalling data
 	var extraData utils.ExtractDataFromRequest
 	var err error
 	extraData, err = extraData.Extract(r)
@@ -28,14 +40,14 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Делегирование бизнес-логике
+	// Delegating to business logic
 	jwtToken, err := service.AuthenticateUser(credentials)
 	if err != nil {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
 
-	// Отправка успешного ответа
+	// Sending successful response
 	jsonResponse, err := json.Marshal(jwtToken)
 	if err != nil {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)

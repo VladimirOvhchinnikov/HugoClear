@@ -1,10 +1,10 @@
 package controller
 
 import (
+	"encoding/json"
 	"log"
 	"net/http"
 	"proxy/service"
-	"proxy/utils"
 )
 
 // searchUnm is a temporary structure for the search form. Needs to be refined later.
@@ -26,40 +26,30 @@ func (s searchUnm) Process() error {
 // @Success 200 {object} string "Successfully processed search request"
 // @Failure 400 {string} string "Bad Request"
 // @Router /search [post]
-func HandleSearch(w http.ResponseWriter, r *http.Request) {
-	log.Println("HandleSearch - work now")
+// NewSearchHandler создаёт новый HTTP хендлер для поисковых запросов.
+// Возвращает функцию, которая соответствует сигнатуре http.HandlerFunc.
+func NewSearchHandler(searcher service.Searcher) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		log.Println("HandleSearch - запрос обрабатывается")
 
-	// Extracting the format of the incoming request
-	var extraData utils.ExtractDataFromRequest
-	var err error
-	extraData, err = extraData.Extract(r)
-	if err != nil {
-		log.Println(err)
-		w.WriteHeader(http.StatusBadRequest)
-		return
+		// Извлечение запроса из тела запроса
+		var searchReq searchUnm
+		if err := json.NewDecoder(r.Body).Decode(&searchReq); err != nil {
+			http.Error(w, "Некорректный запрос", http.StatusBadRequest)
+			return
+		}
+
+		// Передача данных в слой бизнес-логики
+		result, err := searcher.Search(searchReq.Query)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		// Кодирование и отправка ответа
+		w.Header().Set("Content-Type", "application/json")
+		if err := json.NewEncoder(w).Encode(result); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
 	}
-
-	// Unmarshalling the request body
-	var search searchUnm
-	err = extraData.UnmarshalAndProcess(r, &search)
-	if err != nil {
-		log.Println(err)
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
-	// Sending data to the business logic layer
-	var searchLogic service.SearchService = *service.NewSearchService()
-	var searchLogicResult service.SearchResult = service.SearchResult{}
-	searchLogicResult, err = searchLogic.Search(search.Query)
-	if err != nil {
-		log.Println(err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	// Encoding and sending the response
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(searchLogicResult.Result))
 }

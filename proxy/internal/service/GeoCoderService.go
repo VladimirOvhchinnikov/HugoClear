@@ -2,8 +2,8 @@ package service
 
 import "errors"
 
-// Geocoder представляет собой сервис для преобразования адресов в географические координаты.
-type Geocoder struct {
+// geoCoder представляет собой сервис для преобразования адресов в географические координаты.
+type geoCoder struct {
 	// Поля, связанные с сервисом геокодирования
 }
 
@@ -14,11 +14,11 @@ type GeoResult struct {
 }
 
 // GeocoderServiceOption определяет тип функции опции для Geocoder.
-type GeocoderServiceOption func(*Geocoder)
+type GeocoderServiceOption func(*geoCoder)
 
 // NewGeocoder создает новый экземпляр Geocoder с применением переданных опций.
-func NewGeocoder(options ...GeocoderServiceOption) *Geocoder {
-	var geocoder Geocoder = Geocoder{}
+func NewGeocoder(options ...GeocoderServiceOption) *geoCoder {
+	var geocoder geoCoder = geoCoder{}
 
 	for _, option := range options {
 		option(&geocoder)
@@ -28,7 +28,7 @@ func NewGeocoder(options ...GeocoderServiceOption) *Geocoder {
 }
 
 // Geocode выполняет геокодирование на основе предоставленного запроса и возвращает результат.
-func (g *Geocoder) Geocode(query string) (GeoResult, error) {
+func (g *geoCoder) Geocode(query string) (GeoResult, error) {
 	if query == "" {
 		return GeoResult{}, errors.New("query is empty")
 	}

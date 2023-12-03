@@ -17,16 +17,16 @@ func (c Credentials) Process() error {
 // LogPas определяет структуру входных данных для авторизации пользователя.
 // swagger:model
 
-// LoginController управляет логикой входа в систему.
-type LoginController struct {
+// loginController управляет логикой входа в систему.
+type loginController struct {
 }
 
 // LoginControllerOption определяет тип функции опции для LoginController.
-type LoginControllerOption func(*LoginController)
+type LoginControllerOption func(*loginController)
 
 // NewLoginController создает новый экземпляр LoginController с применением переданных опций.
-func NewLoginController(options ...LoginControllerOption) *LoginController {
-	var controller LoginController = LoginController{}
+func NewLoginController(options ...LoginControllerOption) *loginController {
+	var controller loginController = loginController{}
 
 	for _, option := range options {
 		option(&controller)

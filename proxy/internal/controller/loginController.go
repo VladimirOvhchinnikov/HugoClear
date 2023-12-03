@@ -4,7 +4,8 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"proxy/service"
+	"proxy/internal/service"
+	"proxy/middleware"
 	"proxy/utils"
 )
 
@@ -40,20 +41,33 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Delegating to business logic
 	jwtToken, err := service.AuthenticateUser(credentials)
 	if err != nil {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
 
-	// Sending successful response
 	jsonResponse, err := json.Marshal(jwtToken)
 	if err != nil {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
+	w.WriteHeader(http.StatusOK)
+	w.Write(jsonResponse)
+}
+
+type JwtResponseBody struct {
+	Token string `json:"token"`
+}
+
+func SendJwtResponse(w http.ResponseWriter, jwtToken string) {
+	response := middleware.JwtResponse{Body: JwtResponseBody{Token: jwtToken}}
+	jsonResponse, err := json.Marshal(response)
+	if err != nil {
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
 	w.WriteHeader(http.StatusOK)
 	w.Write(jsonResponse)
 }

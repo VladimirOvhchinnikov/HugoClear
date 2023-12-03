@@ -1,9 +1,7 @@
 package service
 
 import (
-	"encoding/json"
 	"errors"
-	"net/http"
 	"proxy/middleware"
 )
 
@@ -16,16 +14,8 @@ func (c Credentials) Process() error {
 	return nil
 }
 
-type JwtResponseBody struct {
-	Token string `json:"token"`
-}
-
 // LogPas определяет структуру входных данных для авторизации пользователя.
 // swagger:model
-type LogPas struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-}
 
 // LoginController управляет логикой входа в систему.
 type LoginController struct {
@@ -53,19 +43,8 @@ func AuthenticateUser(credentials Credentials) (string, error) {
 	return "", errors.New("unauthorized")
 }
 
-func SendJwtResponse(w http.ResponseWriter, jwtToken string) {
-	response := middleware.JwtResponse{Body: JwtResponseBody{Token: jwtToken}}
-	jsonResponse, err := json.Marshal(response)
-	if err != nil {
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return
-	}
-	w.WriteHeader(http.StatusOK)
-	w.Write(jsonResponse)
-}
-
 func CheckLogin(login string) bool {
-	var testLogPas LogPas = LogPas{
+	var testLogPas Credentials = Credentials{
 		Username: "user123",
 	}
 
@@ -78,7 +57,7 @@ func CheckLogin(login string) bool {
 }
 
 func CheckPassword(password string) bool {
-	var testLogPas LogPas = LogPas{
+	var testLogPas Credentials = Credentials{
 		Password: "mypassword",
 	}
 

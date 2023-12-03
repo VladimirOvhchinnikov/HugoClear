@@ -11,6 +11,7 @@ import (
 )
 
 func main() {
+
 	router := router.SetupRouter()
 
 	srv := &http.Server{

@@ -1,16 +1,13 @@
 package router
 
 import (
-	"proxy/controller"
+	"proxy/internal/controller"
 	"proxy/middleware"
-	"proxy/service"
 
 	"github.com/go-chi/chi"
 )
 
 func SetupRouter() *chi.Mux {
-	searchService := service.NewSearch()                        // Создание сервиса
-	searchHandler := controller.NewSearchHandler(searchService) // Создание хендлера
 
 	router := chi.NewRouter()
 
@@ -24,7 +21,7 @@ func SetupRouter() *chi.Mux {
 	protectedRouter := chi.NewRouter()
 	protectedRouter.Use(middleware.JWTAuthMiddleware)
 	protectedRouter.Post("/address/geocode", controller.HandleGeoCode)
-	protectedRouter.Post("/address/search", searchHandler)
+	protectedRouter.Post("/address/search", controller.SearchHandler)
 	router.Mount("/api", protectedRouter)
 
 	return router

@@ -3,7 +3,7 @@ package controller
 import (
 	"log"
 	"net/http"
-	"proxy/service"
+	"proxy/internal/service"
 	"proxy/utils"
 )
 
@@ -48,10 +48,8 @@ func HandleGeoCode(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Sending data to the business logic layer
-	var geoLogic service.GeoService = *service.NewGeoService()
-	var geoLogicResult service.GeoResult = service.GeoResult{}
-	geoLogicResult, err = geoLogic.GeoSE(geocode.Query)
+	geo := service.NewGeocoder()
+	geoResult, err := geo.Geocode(geocode.Query)
 	if err != nil {
 		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -61,5 +59,5 @@ func HandleGeoCode(w http.ResponseWriter, r *http.Request) {
 	// Encoding and sending the response
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(geoLogicResult.Result))
+	w.Write([]byte(geoResult.Result))
 }

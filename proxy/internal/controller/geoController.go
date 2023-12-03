@@ -7,7 +7,6 @@ import (
 	"proxy/utils"
 )
 
-// geoCodeUnm is a temporary structure for the form. Needs to be refined later.
 type geoCodeUnm struct {
 	Query string `json:"query"`
 }
@@ -39,7 +38,6 @@ func HandleGeoCode(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Unmarshalling the request body
 	var geocode geoCodeUnm
 	err = extraData.UnmarshalAndProcess(r, &geocode)
 	if err != nil {

@@ -7,7 +7,6 @@ import (
 	"proxy/internal/service"
 )
 
-// searchUnm is a temporary structure for the search form. Needs to be refined later.
 type searchUnm struct {
 	Query string `json:"query"`
 }
@@ -32,7 +31,6 @@ func SearchHandler(w http.ResponseWriter, r *http.Request) {
 
 	log.Println("HandleSearch - запрос обрабатывается")
 
-	// Извлечение запроса из тела запроса
 	var searchReq searchUnm
 	if err := json.NewDecoder(r.Body).Decode(&searchReq); err != nil {
 		http.Error(w, "Некорректный запрос", http.StatusBadRequest)
@@ -46,7 +44,6 @@ func SearchHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Кодирование и отправка ответа
 	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(resultSearch); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

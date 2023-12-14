@@ -7,22 +7,39 @@ import (
 	"github.com/go-chi/chi"
 )
 
-func SetupRouter() *chi.Mux {
+type RouterConfig struct {
+	router chi.Mux
+}
 
-	router := chi.NewRouter()
+type RouterOption func(*RouterConfig)
 
-	//Публичные ссылки
-	publicRouter := chi.NewRouter()
-	publicRouter.Post("/login", controller.HandleLogin)
-	publicRouter.Post("/registration", nil) //добавь хендлер
-	router.Mount("/", publicRouter)
+func NewRouter(options ...RouterOption) *RouterConfig {
 
-	//Приватные ссылки
-	protectedRouter := chi.NewRouter()
-	protectedRouter.Use(middleware.JWTAuthMiddleware)
-	protectedRouter.Post("/address/geocode", controller.HandleGeoCode)
-	protectedRouter.Post("/address/search", controller.SearchHandler)
-	router.Mount("/api", protectedRouter)
+	var router RouterConfig = RouterConfig{}
 
-	return router
+	for _, option := range options {
+		option(&router)
+	}
+
+	return &router
+}
+
+func PublicRouterOption() RouterOption {
+	return func(rc *RouterConfig) {
+		var publicRouter *chi.Mux = chi.NewRouter()
+		publicRouter.Post("/login", controller.HandleLogin)
+		publicRouter.Post("/registration", nil) //добавь хендлер)
+		rc.router.Mount("/public", publicRouter)
+	}
+}
+
+func PrivateRouterOption() RouterOption {
+	return func(rc *RouterConfig) {
+		var protectedRouter *chi.Mux = chi.NewRouter()
+		protectedRouter.Use(middleware.JWTAuthMiddleware)
+		protectedRouter.Post("/address/geocode", controller.HandleGeoCode)
+		protectedRouter.Post("/address/search", controller.SearchHandler)
+
+		rc.router.Mount("/private", protectedRouter)
+	}
 }

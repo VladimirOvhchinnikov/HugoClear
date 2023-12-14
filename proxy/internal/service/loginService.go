@@ -14,9 +14,6 @@ func (c Credentials) Process() error {
 	return nil
 }
 
-// LogPas определяет структуру входных данных для авторизации пользователя.
-// swagger:model
-
 // loginController управляет логикой входа в систему.
 type loginController struct {
 }
